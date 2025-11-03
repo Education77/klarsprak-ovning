@@ -14,30 +14,69 @@
     --accent:#7ba87f;
     --tipbg:#eef3ee;
   }
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:20px;}
+  body{
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    margin:0;
+    padding:20px;
+  }
   h1{font-size:1.6rem;margin-bottom:0.4em;}
   p.lead{color:var(--muted);margin-bottom:1.4em;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:14px;
+    box-shadow:0 2px 10px rgba(0,0,0,.04);
+  }
   .question h3{margin-top:0;font-size:1rem;}
   .options{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
   button.option{
-    text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;
-    transition:background 0.15s ease, border-color 0.15s ease;
+    text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:10px 14px;cursor:pointer;transition:background 0.15s ease,border-color 0.15s ease;
   }
   button.option:hover{background:#f3f7f3;}
+  button.option.selected{border-color:var(--accent);background:#f0f7f0;}
   button.option.correct{border-color:#7fbf7f;background:#f0f7f0;}
   button.option.wrong{border-color:#d78f8f;background:#fbf3f3;}
-  .feedback{margin-top:8px;color:var(--muted);}
-  .tip{background:var(--tipbg);border-left:4px solid var(--accent);padding:12px 14px;border-radius:8px;margin-top:18px;}
+  .feedback{margin-top:8px;color:var(--muted);display:none;}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  button.action{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:999px;
+    padding:10px 14px;
+    font:inherit;
+    cursor:pointer;
+  }
+  button.action:hover{box-shadow:0 1px 6px rgba(0,0,0,.08);}
+  .tip{
+    background:var(--tipbg);
+    border-left:4px solid var(--accent);
+    padding:12px 14px;
+    border-radius:8px;
+    margin-top:18px;
+  }
+  .score{font-weight:600;}
 </style>
 </head>
 <body>
+
 <h1>Övning: Språk och bemötande</h1>
 <p class="lead">
-Välj det alternativ som ger ett tydligt, vänligt och inkluderande bemötande. Du får direkt återkoppling efter varje val.
+Välj det alternativ som ger ett tydligt, vänligt och inkluderande bemötande. När du har svarat på alla frågor kan du kontrollera hur det gick.
 </p>
 
 <div id="quiz"></div>
+
+<div class="bar">
+  <button class="action" id="checkBtn">Kontrollera svar</button>
+  <button class="action" id="resetBtn">Rensa</button>
+</div>
+
+<div id="result" class="tip" style="display:none;"></div>
 
 <div class="tip">
   <strong>Kom ihåg:</strong>
@@ -53,71 +92,109 @@ const QUESTIONS = [
   {
     text: "En invånare skriver: 'Jag hittar inte hur man bokar en tid, kan du hjälpa mig?'. Hur svarar du?",
     options: [
-      {text:"Du hittar informationen på vår webbplats under fliken 'Boka tid'.", feedback:"Korrekt men lite distanserat – tonen kan bli vänligare.", correct:false},
-      {text:"Hej! Självklart hjälper jag dig. Gå in på vår webbplats och välj 'Boka tid'. Hör av dig om det inte fungerar.", feedback:"Ja! Vänligt, tydligt och tillmötesgående.", correct:true},
-      {text:"Information om tidsbokning finns tillgänglig på kommunens hemsida.", feedback:"För formellt och opersonligt.", correct:false}
+      {text:"Du hittar informationen på vår webbplats under fliken 'Boka tid'.", correct:false, feedback:"Korrekt men lite distanserat – tonen kan bli vänligare."},
+      {text:"Hej! Självklart hjälper jag dig. Gå in på vår webbplats och välj 'Boka tid'. Hör av dig om det inte fungerar.", correct:true, feedback:"Vänligt, tydligt och tillmötesgående."},
+      {text:"Information om tidsbokning finns tillgänglig på kommunens hemsida.", correct:false, feedback:"För formellt och opersonligt."}
     ]
   },
   {
     text: "Hur formulerar du en påminnelse i ett mejl till kollegor?",
     options: [
-      {text:"Ni ombeds inkomma med materialet senast fredag.", feedback:"Formellt och distanserat.", correct:false},
-      {text:"Hej! En liten påminnelse – skicka gärna in materialet senast fredag. Tack!", feedback:"Perfekt! Tydligt, vänligt och respektfullt.", correct:true},
-      {text:"Glöm inte att lämna in materialet!", feedback:"Lite väl kort och kan uppfattas som hårt.", correct:false}
+      {text:"Ni ombeds inkomma med materialet senast fredag.", correct:false, feedback:"Formellt och distanserat."},
+      {text:"Hej! En liten påminnelse – skicka gärna in materialet senast fredag. Tack!", correct:true, feedback:"Tydligt, vänligt och respektfullt."},
+      {text:"Glöm inte att lämna in materialet!", correct:false, feedback:"Lite väl kort och kan uppfattas som hårt."}
     ]
   },
   {
     text: "Vilken text visar ett inkluderande språk?",
     options: [
-      {text:"Var och en måste ta ansvar för sin egen fru eller man.", feedback:"Inte inkluderande, utgår från heteronorm.", correct:false},
-      {text:"Var och en ansvarar för sin partner.", feedback:"Ja! Könsneutralt och inkluderande.", correct:true},
-      {text:"Alla medarbetare ansvarar för sin respektive.", feedback:"Acceptabelt, men ordet 'respektive' kan kännas formellt.", correct:false}
+      {text:"Var och en måste ta ansvar för sin egen fru eller man.", correct:false, feedback:"Inte inkluderande, utgår från heteronorm."},
+      {text:"Var och en ansvarar för sin partner.", correct:true, feedback:"Könsneutralt och inkluderande."},
+      {text:"Alla medarbetare ansvarar för sin respektive.", correct:false, feedback:"Acceptabelt, men ordet 'respektive' kan kännas formellt."}
     ]
   },
   {
     text: "Du skriver en inbjudan till ett möte. Vilken inledning ger ett gott bemötande?",
     options: [
-      {text:"Härmed kallas du till möte den 5 maj kl. 09.00.", feedback:"Formellt och kallt – inte särskilt inbjudande.", correct:false},
-      {text:"Hej! Vi vill gärna att du deltar på mötet den 5 maj kl. 09.00.", feedback:"Ja! Vänligt och inkluderande.", correct:true},
-      {text:"Mötet äger rum den 5 maj kl. 09.00 i rum Alfa.", feedback:"Informativt men utan hälsning eller tilltal.", correct:false}
+      {text:"Härmed kallas du till möte den 5 maj kl. 09.00.", correct:false, feedback:"Formellt och kallt – inte särskilt inbjudande."},
+      {text:"Hej! Vi vill gärna att du deltar på mötet den 5 maj kl. 09.00.", correct:true, feedback:"Vänligt och inkluderande."},
+      {text:"Mötet äger rum den 5 maj kl. 09.00 i rum Alfa.", correct:false, feedback:"Informativt men utan hälsning eller tilltal."}
     ]
   }
 ];
 
-const quizEl = document.getElementById("quiz");
+const quiz = document.getElementById("quiz");
+const result = document.getElementById("result");
 
-QUESTIONS.forEach((q, i)=>{
-  const card = document.createElement("div");
-  card.className="card question";
-  const h3 = document.createElement("h3");
-  h3.textContent = (i+1)+") "+q.text;
-  card.appendChild(h3);
-
-  const optDiv = document.createElement("div");
-  optDiv.className="options";
-  q.options.forEach(opt=>{
-    const btn = document.createElement("button");
-    btn.className="option";
-    btn.textContent=opt.text;
-    btn.addEventListener("click",()=>{
-      // lås alternativ
-      optDiv.querySelectorAll("button").forEach(b=>b.disabled=true);
-      if(opt.correct){
-        btn.classList.add("correct");
-      } else {
-        btn.classList.add("wrong");
-      }
-      feedback.textContent=opt.feedback;
+function renderQuiz(){
+  quiz.innerHTML="";
+  QUESTIONS.forEach((q,i)=>{
+    const card=document.createElement("div");
+    card.className="card question";
+    const h3=document.createElement("h3");
+    h3.textContent=`${i+1}) ${q.text}`;
+    card.appendChild(h3);
+    const opts=document.createElement("div");
+    opts.className="options";
+    q.options.forEach((opt,j)=>{
+      const btn=document.createElement("button");
+      btn.className="option";
+      btn.textContent=opt.text;
+      btn.addEventListener("click",()=>{
+        opts.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));
+        btn.classList.add("selected");
+        q.selected=j;
+      });
+      opts.appendChild(btn);
     });
-    optDiv.appendChild(btn);
+    const fb=document.createElement("div");
+    fb.className="feedback";
+    card.appendChild(opts);
+    card.appendChild(fb);
+    quiz.appendChild(card);
   });
+  result.style.display="none";
+  result.textContent="";
+}
 
-  const feedback = document.createElement("div");
-  feedback.className="feedback";
-  card.appendChild(optDiv);
-  card.appendChild(feedback);
-  quizEl.appendChild(card);
-});
+function checkAnswers(){
+  let total=QUESTIONS.length, correct=0;
+  const cards=document.querySelectorAll(".question");
+  QUESTIONS.forEach((q,i)=>{
+    const card=cards[i];
+    const opts=card.querySelectorAll(".option");
+    const fb=card.querySelector(".feedback");
+    if(q.selected===undefined){
+      fb.style.display="block";
+      fb.textContent="Du har inte valt något svar.";
+      return;
+    }
+    opts.forEach((b,idx)=>{
+      b.disabled=true;
+      const isCorrect=q.options[idx].correct;
+      if(idx===q.selected){
+        if(isCorrect){
+          b.classList.add("correct");
+          correct++;
+        } else {
+          b.classList.add("wrong");
+        }
+      }
+    });
+    fb.style.display="block";
+    fb.textContent=q.options[q.selected].feedback;
+  });
+  result.style.display="block";
+  if(correct===total){
+    result.innerHTML=`<span class="score">Snyggt! ${correct}/${total} rätt.</span> Alla dina svar visar ett vänligt och inkluderande språk.`;
+  } else {
+    result.innerHTML=`<span class="score">${correct}/${total} rätt.</span> Läs igenom feedbacken ovan och försök igen.`;
+  }
+}
+
+document.getElementById("checkBtn").addEventListener("click",checkAnswers);
+document.getElementById("resetBtn").addEventListener("click",renderQuiz);
+renderQuiz();
 </script>
 </body>
 </html>
