@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klarspråkstest</title>
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #fafafa;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    color: #2b3d63;
+  }
+  .instructions {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .test-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+  .column {
+    width: 250px;
+    padding: 10px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  .column h2 {
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .item, .dropzone {
+    background-color: #f7f7f7;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    margin: 8px 0;
+    cursor: move;
+    transition: all 0.2s ease;
+  }
+  .item.dragging {
+    opacity: 0.5;
+  }
+  .dropzone.hover {
+    background-color: #e8f0ff;
+    border-color: #4c82e0;
+  }
+  .dropzone.correct {
+    background-color: #d6f5d6;
+    border-color: #5cb85c;
+  }
+  .dropzone.incorrect {
+    background-color: #
