@@ -186,16 +186,17 @@ function checkAnswers(){
   b.disabled = true;
   const isCorrect = q.options[idx].correct;
   if (idx === q.selected) {
-    if (isCorrect) {
-      b.classList.add("correct");
-      fb.className = "feedback correct";
-      icon.innerHTML = '<span style="color:#7ba87f;">✔️</span>';
-      correct++;
-    } else {
-      b.classList.add("wrong");
-      fb.className = "feedback wrong";
-      icon.innerHTML = '<span style="color:#cc7b7b;">❌</span>';
-    }
+    if(isCorrect){
+    b.classList.add("correct");
+    fb.className="feedback correct";
+    icon.innerHTML = '<span style="color:#7ba87f;">&#10003;</span>';
+    correct++;
+} else {
+  b.classList.add("wrong");
+  fb.className="feedback wrong";
+  icon.innerHTML = '<span style="color:#cc7b7b;">&#10007;</span>';
+}
+
   }
 });
 
