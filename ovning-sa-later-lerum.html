@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Övning: Så låter Lerums kommun</title>
+<style>
+  :root{
+    --bg:#f9faf8; --card:#fff; --line:#e2e6e2; --ink:#1f2a1f;
+    --muted:#556; --accent:#7ba87f; --tipbg:#eef3ee; --bad:#cc7b7b;
+  }
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:20px;}
+  h1{font-size:1.6rem;margin:0 0 0.4em}
+  h2{font-size:1.25rem;margin:0 0 0.4em}
+  p.lead{color:var(--muted);margin:0 0 1.2em}
+  .section{margin-top:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+  .muted{color:var(--muted)}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font:inherit;cursor:pointer}
+  button:hover{box-shadow:0 1px 6px rgba(0,0,0,.08)}
+  .tip{background:var(--tipbg);border-left:4px solid var(--accent);padding:12px 14px;border-radius:8px;margin-top:12px}
+  .score{font-weight:600}
+
+  /* Del 1 */
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .bank .items{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 12px;cursor:grab;user-select:none;font-size:14px;line-height:1.2;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+  .drop{min-height:160px;border:2px dashed var(--line);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:10px;background:#fff}
+  .drop.hover{background:#fafdf9;border-color:var(--accent)}
+  .label{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .label:before{content:"";display:inline-block;width:8px;height:20px;background:var(--accent);border-radius:4px}
+  .chip.correct{border-color:#7fbf7f}
+  .chip.wrong{border-color:var(--bad)}
+
+  /* Del 2 */
+  .question h3{margin:0 0 6px;font-size:1rem}
+  .options{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .option{ text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;transition:background .15s,border-color .15s }
+  .option:hover{background:#f3f7f3}
+  .option.selected{border-color:var(--accent);background:#f0f7f0}
+  .option.correct{border-color:#7fbf7f;background:#f0f7f0}
+  .option.wrong{border-color:var(--bad);background:#fbf3f3}
+
+  /* Feedback */
+  .feedback{margin-top:8px;font-size:.95rem;display:flex;align-items:flex-start;gap:6px;padding-left:8px;line-height:1.4;border-left:4px solid transparent;border-radius:4px;background:#fff;display:none}
+  .feedback.correct{border-left-color:#7fbf7f;color:#1f331f;font-weight:500}
+  .feedback.wrong{border-left-color:var(--bad);color:#4b1f1f;font-weight:500}
+  .feedback.missing{border-left-color:#9ca3af;color:#3f3f46}
+  .feedback .icon{width:18px;height:18px;flex-shrink:0;margin-top:2px;display:inline-block}
+
+  /* Del 3 */
+  textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;resize:vertical;background:#fff}
+
+  /* Slutbelöning */
+  #final{display:none;margin-top:20px;background:#f0f7f0;border-left:4px solid #7ba87f;padding:14px;border-radius:10px;font-size:1rem}
+</style>
+</head>
+<body>
+
+<h1>Övning: Så låter Lerums kommun</h1>
+<p class="lead">Träna på att välja rätt ton, känna igen ton i olika situationer – och reflektera över hur språket påverkar upplevelsen.</p>
+
+<section class="section">
+  <h2>Del 1 – Matcha texten med rätt målgrupp</h2>
+  <p class="muted">Dra varje text till den målgrupp där tonen passar bäst.</p>
+  <div class="card bank"><div class="label"><strong>Texter att placera</strong></div><div id="bank" class="items"></div></div>
+  <div class="grid">
+    <div class="card"><div class="label"><strong>Gymnasieelever</strong></div><div id="drop-elever" class="drop"></div></div>
+    <div class="card"><div class="label"><strong>Nyinflyttade</strong></div><div id="drop-nyinflyttade" class="drop"></div></div>
+    <div class="card"><div class="label"><strong>Företagare</strong></div><div id="drop-foretagare" class="drop"></div></div>
+  </div>
+  <div class="bar"><button id="checkDnd">Kontrollera del 1</button><button id="resetDnd">Rensa del 1</button></div>
+  <div id="resDnd" class="tip" style="display:none"></div>
+</section>
+
+<section class="section">
+  <h2>Del 2 – Känn igen tonen i olika situationer</h2>
+  <p class="muted">Välj den ton som stämmer bäst med texten. Kontrollera när du är klar.</p>
+  <div id="quiz"></div>
+  <div class="bar"><button id="checkQuiz">Kontrollera del 2</button><button id="resetQuiz">Rensa del 2</button></div>
+  <div id="resQuiz" class="tip" style="display:none"></div>
+</section>
+
+<section class="section">
+  <h2>Del 3 – Reflektera</h2>
+  <div class="card"><p><strong>1)</strong> När tycker du att ton gör störst skillnad i ditt arbete?</p><textarea placeholder="Skriv dina tankar här … (sparas inte)"></textarea></div>
+  <div class="card"><p><strong>2)</strong> Vilken ton vill du att Lerums kommun ska förmedla i mötet med invånare – och hur kan du bidra till det i dina texter?</p><textarea placeholder="Skriv dina tankar här … (sparas inte)"></textarea></div>
+</section>
+
+<div id="final">
+  💚 <strong>Du nailade tonen – snyggt!</strong><br>
+  Dina svar visar att du kan anpassa språket efter både mottagare och situation.
+</div>
+
+<script>
+const ICONS = {
+  check:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><polyline points="20 6 9 17 4 12" fill="none" stroke="#7ba87f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  cross:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18" stroke="#cc7b7b" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="#cc7b7b" stroke-width="3" stroke-linecap="round"/></svg>'
+};
+
+/* ---- Del 1 ---- */
+const DND_ITEMS=[{text:"Anmäl dig till skolans sommaraktiviteter via vår e-tjänst!",target:"elever"},{text:"Välkommen till Lerum! Här hittar du information om sophämtning, skolor och fritid.",target:"nyinflyttade"},{text:"Du kan lämna din bygglovsansökan digitalt – vi hanterar den snabbt och tydligt.",target:"foretagare"}];
+const bank=document.getElementById('bank');
+const zones={elever:document.getElementById('drop-elever'),nyinflyttade:document.getElementById('drop-nyinflyttade'),foretagare:document.getElementById('drop-foretagare')};
+let dragEl=null;let dndScore=0;
+
+function makeChip(it,i){const d=document.createElement('div');d.className='chip';d.draggable=true;d.textContent=it.text;d.dataset.target=it.target;d.dataset.idx=i;
+d.addEventListener('dragstart',e=>{dragEl=d;e.dataTransfer.effectAllowed='move'});d.addEventListener('dragend',()=>dragEl=null);return d;}
+function resetDnd(){document.getElementById('resDnd').style.display='none';bank.innerHTML='';Object.values(zones).forEach(z=>z.innerHTML='');DND_ITEMS.forEach((it,i)=>bank.appendChild(makeChip(it,i)));dndScore=0;}
+['elever','nyinflyttade','foretagare'].forEach(k=>{const z=zones[k];['dragover','dragenter'].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.add('hover');}));z.addEventListener('dragleave',()=>z.classList.remove('hover'));z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('hover');if(dragEl)z.appendChild(dragEl);});});
+function checkDnd(){let total=DND_ITEMS.length,correct=0;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('correct','wrong'));Object.entries(zones).forEach(([id,z])=>{z.querySelectorAll('.chip').forEach(ch=>{if(ch.dataset.target===id){ch.classList.add('correct');correct++;}else ch.classList.add('wrong');});});
+const res=document.getElementById('resDnd');res.style.display='block';res.innerHTML=(correct===total)?`<span class="score">Snyggt! ${correct}/${total} rätt.</span>`:`<span class="score">${correct}/${total} rätt.</span>`;dndScore=(correct===total)?1:0;checkFinal();}
+
+/* ---- Del 2 ---- */
+const QUIZ=[{text:"Stäng av vattnet före renoveringen – så undviker du skador.",options:[{text:"Direkt och viktig",correct:true,feedback:"Tydligt och handlingsinriktat."},{text:"Vänlig och informativ",correct:false,feedback:"Här behövs mer tydlighet."},{text:"Ung och uppmuntrande",correct:false,feedback:"Inte rätt ton här."}]},{text:"Välkommen till Lerum! Här hittar du information om sophämtning, skolor och fritid.",options:[{text:"Vänlig och informativ",correct:true,feedback:"Inkluderande och välkomnande."},{text:"Formell och saklig",correct:false,feedback:"Lite för distanserat."},{text:"Direkt och viktig",correct:false,feedback:"Inte en säkerhetsfråga."}]}];
+const quizEl=document.getElementById('quiz');let quizScore=0;
+function renderQuiz(){quizEl.innerHTML='';QUIZ.forEach((q,i)=>{const card=document.createElement('div');card.className='card question';card.innerHTML=`<h3>${i+1}) ${q.text}</h3>`;const opts=document.createElement('div');opts.className='options';
+q.options.forEach((o,j)=>{const b=document.createElement('button');b.className='option';b.textContent=o.text;b.addEventListener('click',()=>{opts.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');q.selected=j;});opts.appendChild(b);});
+const fb=document.createElement('div');fb.className='feedback';fb.innerHTML='<span class="icon"></span><span></span>';card.appendChild(opts);card.appendChild(fb);quizEl.appendChild(card);});
+document.getElementById('resQuiz').style.display='none';quizScore=0;}
+function checkQuiz(){let total=QUIZ.length,correct=0;const cards=document.querySelectorAll('.question');QUIZ.forEach((q,i)=>{const card=cards[i],opts=card.querySelectorAll('.option'),fb=card.querySelector('.feedback'),icon=fb.querySelector('.icon'),text=fb.querySelector('span:last-child');
+if(q.selected===undefined){fb.style.display='flex';fb.className='feedback missing';text.textContent='Du har inte valt något svar.';return;}
+opts.forEach((b,idx)=>{b.disabled=true;const ok=q.options[idx].correct;if(idx===q.selected){if(ok){b.classList.add('correct');fb.className='feedback correct';icon.innerHTML=ICONS.check;correct++;}else{b.classList.add('wrong');fb.className='feedback wrong';icon.innerHTML=ICONS.cross;}}});fb.style.display='flex';text.textContent=q.options[q.selected].feedback;});
+const res=document.getElementById('resQuiz');res.style.display='block';res.innerHTML=(correct===total)?`<span class="score">Toppen! ${correct}/${total} rätt.</span>`:`<span class="score">${correct}/${total} rätt.</span>`;quizScore=(correct===total)?1:0;checkFinal();}
+
+/* ---- Slutbelöning ---- */
+function checkFinal(){const final=document.getElementById('final');final.style.display=(dndScore===1&&quizScore===1)?'block':'none';}
+
+/* ---- Init ---- */
+document.getElementById('checkDnd').addEventListener('click',checkDnd);
+document.getElementById('resetDnd').addEventListener('click',resetDnd);
+document.getElementById('checkQuiz').addEventListener('click',checkQuiz);
+document.getElementById('resetQuiz').addEventListener('click',renderQuiz);
+resetDnd();renderQuiz();
+</script>
+</body>
+</html>
