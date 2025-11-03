@@ -16,49 +16,47 @@
   }
   body{
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    margin:0;
-    padding:20px;
+    background:var(--bg); color:var(--ink);
+    margin:0; padding:20px;
   }
   h1{font-size:1.6rem;margin-bottom:0.4em;}
   p.lead{color:var(--muted);margin-bottom:1.4em;}
   .card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:16px;
-    margin-bottom:14px;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:16px; margin-bottom:14px;
     box-shadow:0 2px 10px rgba(0,0,0,.04);
   }
   .question h3{margin-top:0;font-size:1rem;}
   .options{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
   button.option{
-    text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;
-    padding:10px 14px;cursor:pointer;transition:background 0.15s ease,border-color 0.15s ease;
+    text-align:left; background:#fff; border:1px solid var(--line);
+    border-radius:10px; padding:10px 14px; cursor:pointer;
+    transition:background .15s, border-color .15s;
   }
   button.option:hover{background:#f3f7f3;}
   button.option.selected{border-color:var(--accent);background:#f0f7f0;}
   button.option.correct{border-color:#7fbf7f;background:#f0f7f0;}
   button.option.wrong{border-color:#d78f8f;background:#fbf3f3;}
-  .feedback{margin-top:8px;color:var(--muted);display:none;}
+
+  /* Tydlig feedback */
+  .feedback{
+    margin-top:8px; font-size:.95rem;
+    border-left:4px solid transparent; padding-left:10px;
+    border-radius:4px; line-height:1.4; display:none;
+  }
+  .feedback.correct{background:#f0f7f0;border-left-color:#7fbf7f;color:#1f331f;font-weight:500;}
+  .feedback.wrong{background:#fbf3f3;border-left-color:#cc7b7b;color:#4b1f1f;font-weight:500;}
+  .feedback.missing{background:#f4f5f6;border-left-color:#9ca3af;color:#3f3f46;}
+
   .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
   button.action{
-    border:1px solid var(--line);
-    background:#fff;
-    border-radius:999px;
-    padding:10px 14px;
-    font:inherit;
-    cursor:pointer;
+    border:1px solid var(--line); background:#fff; border-radius:999px;
+    padding:10px 14px; font:inherit; cursor:pointer;
   }
   button.action:hover{box-shadow:0 1px 6px rgba(0,0,0,.08);}
-  .tip{
-    background:var(--tipbg);
-    border-left:4px solid var(--accent);
-    padding:12px 14px;
-    border-radius:8px;
-    margin-top:18px;
-  }
+
+  .tip{background:var(--tipbg);border-left:4px solid var(--accent);
+    padding:12px 14px;border-radius:8px;margin-top:18px;}
   .score{font-weight:600;}
 </style>
 </head>
@@ -109,8 +107,8 @@ const QUESTIONS = [
     text: "Vilken text visar ett inkluderande språk?",
     options: [
       {text:"Personer med funktionsvariation får gärna delta i mötet om de kan.", correct:false, feedback:"Den antyder att personer med funktionsvariation är undantag – inte inkluderande."},
-      {text:"Alla som vill är välkomna att delta i mötet. Lokalen är tillgänglig för alla.", correct:true, feedback:"Ja! Det här är inkluderande – välkomnande och tillgängligt för alla."},
-      {text:"Vi erbjuder särskilda platser för personer med funktionsvariationer.", correct:false, feedback:"Avsikten är god men formuleringen skapar distans – försök skriva mer jämlikt."}
+      {text:"Alla som vill är välkomna att delta i mötet. Lokalen är tillgänglig för alla.", correct:true, feedback:"Inkluderande och välkomnande – betonar tillgänglighet för alla."},
+      {text:"Vi erbjuder särskilda platser för personer med funktionsvariationer.", correct:false, feedback:"Avsikten är god men formuleringen skapar distans – skriv mer jämlikt."}
     ]
   },
   {
@@ -134,6 +132,7 @@ function renderQuiz(){
     const h3=document.createElement("h3");
     h3.textContent=`${i+1}) ${q.text}`;
     card.appendChild(h3);
+
     const opts=document.createElement("div");
     opts.className="options";
     q.options.forEach((opt,j)=>{
@@ -147,6 +146,7 @@ function renderQuiz(){
       });
       opts.appendChild(btn);
     });
+
     const fb=document.createElement("div");
     fb.className="feedback";
     card.appendChild(opts);
@@ -164,36 +164,45 @@ function checkAnswers(){
     const card=cards[i];
     const opts=card.querySelectorAll(".option");
     const fb=card.querySelector(".feedback");
+
     if(q.selected===undefined){
       fb.style.display="block";
+      fb.className="feedback missing";
       fb.textContent="Du har inte valt något svar.";
       return;
     }
+
     opts.forEach((b,idx)=>{
       b.disabled=true;
       const isCorrect=q.options[idx].correct;
       if(idx===q.selected){
         if(isCorrect){
           b.classList.add("correct");
+          fb.className="feedback correct";
           correct++;
         } else {
           b.classList.add("wrong");
+          fb.className="feedback wrong";
         }
       }
     });
+
     fb.style.display="block";
     fb.textContent=q.options[q.selected].feedback;
   });
+
   result.style.display="block";
   if(correct===total){
-    result.innerHTML=`<span class="score">Snyggt! ${correct}/${total} rätt.</span> Alla dina svar visar ett vänligt och inkluderande språk.`;
+    result.innerHTML=`<span class="score">Snyggt! ${correct}/${total} rätt.</span> Alla dina val visar ett vänligt och inkluderande bemötande.`;
   } else {
-    result.innerHTML=`<span class="score">${correct}/${total} rätt.</span> Läs igenom feedbacken ovan och försök igen.`;
+    result.innerHTML=`<span class="score">${correct}/${total} rätt.</span> Läs feedbacken ovan och försök igen.`;
   }
 }
 
 document.getElementById("checkBtn").addEventListener("click",checkAnswers);
 document.getElementById("resetBtn").addEventListener("click",renderQuiz);
+
+// init
 renderQuiz();
 </script>
 </body>
