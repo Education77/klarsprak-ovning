@@ -182,23 +182,22 @@ function checkAnswers(){
       return;
     }
 
-    opts.forEach((b,idx)=>{
-      b.disabled=true;
-      const isCorrect=q.options[idx].correct;
-      if(idx===q.selected){
-        if(isCorrect){
-          b.classList.add("correct");
-          fb.className="feedback correct";
-          icon.textContent="✔️";
-          <span style="color:#7ba87f;">✔️</span>
-          correct++;
-        } else {
-          b.classList.add("wrong");
-          fb.className="feedback wrong";
-          icon.textContent="❌";
-        }
-      }
-    });
+   opts.forEach((b, idx) => {
+  b.disabled = true;
+  const isCorrect = q.options[idx].correct;
+  if (idx === q.selected) {
+    if (isCorrect) {
+      b.classList.add("correct");
+      fb.className = "feedback correct";
+      icon.innerHTML = '<span style="color:#7ba87f;">✔️</span>';
+      correct++;
+    } else {
+      b.classList.add("wrong");
+      fb.className = "feedback wrong";
+      icon.innerHTML = '<span style="color:#cc7b7b;">❌</span>';
+    }
+  }
+});
 
     fb.style.display="flex";
     text.textContent=q.options[q.selected].feedback;
