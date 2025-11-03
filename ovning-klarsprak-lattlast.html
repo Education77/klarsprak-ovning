@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Övning: Klarspråk eller Lättläst</title>
+<style>
+  /* --- Färgtema (matchar tidigare övningar) --- */
+  :root{
+    --bg:#f9faf8;         /* sidbakgrund */
+    --ink:#1f2a1f;        /* text */
+    --muted:#556;         /* dämpad text */
+    --line:#e2e6e2;       /* linjer */
+    --card:#ffffff;       /* kortbakgrund */
+    --tipbg:#eef3ee;      /* tipsruta */
+    --accent:#7ba87f;     /* vänster markering */
+  }
+
+  /* --- Baslayout --- */
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:980px;margin:auto;padding:20px}
+  h1{font-size:clamp(22px,3vw,28px);margin:0 0 8px}
+  p.lead{color:var(--muted);margin:0 0 16px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+  @media (max-width:860px){.grid{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+  .pad{padding:16px}
+  .col h2{margin:0 0 8px;font-size:1.05rem}
+  .muted{color:var(--muted)}
+
+  /* --- Källdata (lappar) --- */
+  .bank{min-height:140px}
+  .items{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{
+    background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 12px;
+    cursor:grab; user-select:none; font-size:14px; line-height:1.2;
+    box-shadow:0 1px 6px rgba(0,0,0,.05)
+  }
+  .chip[draggable="true"]:active{cursor:grabbing}
+  .chip.kbFocus{outline:2px solid var(--accent)}
+  .chip.correct{border-color:#7fbf7f}
+  .chip.wrong{border-color:#cc7b7b}
+
+  /* --- Zonernas listor --- */
+  .drop{
+    min-height:180px;border:2px dashed var(--line);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:10px
+  }
+  .drop:focus{outline:3px solid var(--accent);outline-offset:2px}
+  .drop.hover{background:#fafdf9;border-color:var(--accent)}
+  .label{
+    display:flex;align-items:center;gap:8px;margin-bottom:8px
+  }
+  .label:before{
+    content:"";display:inline-block;width:8px;height:20px;background:var(--accent);border-radius:4px
+  }
+
+  /* --- Knappbar --- */
+  .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font:inherit;cursor:pointer}
+  button:hover{box-shadow:0 1px 6px rgba(0,0,0,.08)}
+
+  /* --- Tipsruta --- */
+  .tip{background:var(--tipbg);border-left:4px solid var(--accent);padding:12px 14px;border-radius:8px;margin-top:14px}
+  .score{font-weight:600}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Övning: Klarspråk eller Lättläst</h1>
+  <p class="lead">
+    Dra varje mening till rätt kategori. <strong>Klarspråk</strong> används i myndighetskommunikation anpassad efter mottagaren.
+    <strong>Lättläst</strong> är extra anpassat för personer som har svårt att ta till sig text.
+  </p>
+
+  <!-- Källdata att dra ifrån -->
+  <section class="card pad bank" aria-labelledby="bank-label">
+    <div id="bank-label" class="label"><strong>Att sortera</strong></div>
+    <div id="items" class="items" role="list"></div>
+  </section>
+
+  <!-- Målzoner -->
+  <section class="grid">
+    <div class="card pad col">
+      <div class="label"><h2>Klarspråk</h2></div>
+      <div id="klarsprak" class="drop" tabindex="0" role="list" aria-label="Klarspråk"></div>
+      <p class="muted" style="margin-top:8px">Rakt, korrekt och anpassat efter mottagaren i offentlig kommunikation.</p>
+    </div>
+    <div class="card pad col">
+      <div class="label"><h2>Lättläst</h2></div>
+      <div id="lattlast" class="drop" tabindex="0" role="list" aria-label="Lättläst"></div>
+      <p class="muted" style="margin-top:8px">Extra korta meningar, enklare ord och tydliga uppmaningar.</p>
+    </div>
+  </section>
+
+  <!-- Knappbar + resultat -->
+  <div class="bar">
+    <button id="checkBtn">Kontrollera svar</button>
+    <button id="resetBtn" title="Flyttar tillbaka alla meningar">Rensa</button>
+  </div>
+  <div id="result" class="tip" aria-live="polite" style="display:none"></div>
+
+  <details class="tip">
+    <summary>Behöver du en påminnelse om skillnaden?</summary>
+    <ul>
+      <li><strong>Klarspråk</strong>: begripligt språk, anpassat efter mottagaren, korrekt och sakligt.</li>
+      <li><strong>Lättläst</strong>: särskilt anpassade texter för personer med lässvårigheter.</li>
+    </ul>
+  </details>
+</main>
+
+<script>
+  // --- Källdata (du kan byta ut/utöka här) ---
+  const DATA = [
+    { text: "Du kan ansöka om semester via intranätet. Gör det i god tid.", target: "klarsprak" },
+    { text: "Vill du ha semester? Sök på intranätet. Gör det i tid.", target: "lattlast" },
+    { text: "Om du blir sjuk ska du anmäla det till din arbetsgivare samma dag.", target: "klarsprak" },
+    { text: "Är du sjuk? Ring din chef idag.", target: "lattlast" },
+    { text: "Avgiften ska vara betald senast 31 mars.", target: "klarsprak" },
+    { text: "Betala senast 31 mars.", target: "lattlast" },
+    { text: "Mötet börjar klockan 09.00 i sal Alfa.", target: "klarsprak" },
+    { text: "Kom till sal Alfa kl 9.", target: "lattlast" }
+  ];
+
+  // --- Hjälp: skapa element ---
+  function el(tag, attrs={}, ...children){
+    const e = document.createElement(tag);
+    Object.entries(attrs).forEach(([k,v])=>{
+      if(k==="class") e.className = v;
+      else if(k==="dataset") Object.entries(v).forEach(([dk,dv])=>e.dataset[dk]=dv);
+      else e.setAttribute(k,v);
+    });
+    children.forEach(c => e.append(c));
+    return e;
+  }
+
+  const bank = document.getElementById('items');
+  const zones = {
+    klarsprak: document.getElementById('klarsprak'),
+    lattlast:  document.getElementById('lattlast')
+  };
+  const result = document.getElementById('result');
+
+  // --- Init: fyll bank med chips ---
+  function reset(){
+    result.style.display = 'none';
+    result.textContent = '';
+    bank.innerHTML = '';
+    Object.values(zones).forEach(z=>z.innerHTML='');
+    DATA.forEach((item, i)=>{
+      const chip = el('div', {
+        class:'chip',
+        draggable:'true',
+        role:'listitem',
+        tabindex:'0',
+        dataset:{ target:item.target, idx:i }
+      }, item.text);
+      addDnD(chip);
+      bank.appendChild(chip);
+    });
+  }
+
+  // --- Drag & Drop + tangentbordsstöd ---
+  let dragEl = null;
+
+  function addDnD(chip){
+    chip.addEventListener('dragstart', (e)=>{
+      dragEl = chip;
+      e.dataTransfer.setData('text/plain', chip.dataset.idx);
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(()=>chip.classList.add('ghost'),0);
+    });
+    chip.addEventListener('dragend', ()=>{
+      chip.classList.remove('ghost');
+      dragEl = null;
+    });
+
+    // Tangentbordsstöd: Enter väljer, piltangenter flyttar fokus, Space/Enter släpper i fokuserad zon
+    chip.addEventListener('keydown', (e)=>{
+      const focusZone = document.activeElement;
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        // om en zon har fokus, släpp där
+        if(focusZone && focusZone.classList && focusZone.classList.contains('drop')){
+          focusZone.appendChild(chip);
+          chip.classList.remove('kbFocus');
+        } else {
+          // markera chip för flytt (visuell signal)
+          chip.classList.toggle('kbFocus');
+        }
+      }
+    });
+  }
+
+  ['klarsprak','lattlast'].forEach(id=>{
+    const z = zones[id];
+    ['dragover','dragenter'].forEach(ev=>{
+      z.addEventListener(ev, (e)=>{
+        e.preventDefault();
+        z.classList.add('hover');
+        e.dataTransfer.dropEffect = 'move';
+      });
+    });
+    z.addEventListener('dragleave', ()=>z.classList.remove('hover'));
+    z.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      z.classList.remove('hover');
+      if(dragEl) z.appendChild(dragEl);
+    });
+    // Tangentbordsfokus: låter användaren "släppa" chip med Enter/Space på zonen
+    z.addEventListener('keydown', (e)=>{
+      if((e.key==='Enter'||e.key===' ') && document.querySelector('.chip.kbFocus')){
+        e.preventDefault();
+        z.appendChild(document.querySelector('.chip.kbFocus'));
+        document.querySelectorAll('.chip.kbFocus').forEach(c=>c.classList.remove('kbFocus'));
+      }
+    });
+  });
+
+  // --- Kontrollera svar ---
+  function check(){
+    let total = DATA.length;
+    let correct = 0;
+
+    // rensa tidigare markering
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('correct','wrong'));
+
+    Object.entries(zones).forEach(([zoneId, zoneEl])=>{
+      zoneEl.querySelectorAll('.chip').forEach(chip=>{
+        if(chip.dataset.target === zoneId){
+          chip.classList.add('correct');
+          correct++;
+        } else {
+          chip.classList.add('wrong');
+        }
+      });
+    });
+
+    result.style.display = 'block';
+    if(correct===total){
+      result.innerHTML = `<span class="score">Snyggt! ${correct}/${total} rätt.</span> Alla meningar ligger i rätt kategori.`;
+    } else {
+      result.innerHTML = `<span class="score">${correct}/${total} rätt.</span> Granska de röda markeringarna och försök igen.`;
+    }
+  }
+
+  // --- Eventkopplingar ---
+  document.getElementById('checkBtn').addEventListener('click', check);
+  document.getElementById('resetBtn').addEventListener('click', reset);
+
+  // --- Start ---
+  reset();
+</script>
+</body>
+</html>
