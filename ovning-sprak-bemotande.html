@@ -38,15 +38,16 @@
   button.option.correct{border-color:#7fbf7f;background:#f0f7f0;}
   button.option.wrong{border-color:#d78f8f;background:#fbf3f3;}
 
-  /* Tydlig feedback */
+  /* Feedback – nu vit bakgrund med färgad vänstermarkering + ikon */
   .feedback{
-    margin-top:8px; font-size:.95rem;
-    border-left:4px solid transparent; padding-left:10px;
-    border-radius:4px; line-height:1.4; display:none;
+    margin-top:8px; font-size:.95rem; display:flex; align-items:flex-start;
+    gap:6px; padding-left:8px; line-height:1.4;
+    border-left:4px solid transparent; border-radius:4px; background:white;
   }
-  .feedback.correct{background:#f0f7f0;border-left-color:#7fbf7f;color:#1f331f;font-weight:500;}
-  .feedback.wrong{background:#fbf3f3;border-left-color:#cc7b7b;color:#4b1f1f;font-weight:500;}
-  .feedback.missing{background:#f4f5f6;border-left-color:#9ca3af;color:#3f3f46;}
+  .feedback.correct{border-left-color:#7fbf7f;color:#1f331f;font-weight:500;}
+  .feedback.wrong{border-left-color:#cc7b7b;color:#4b1f1f;font-weight:500;}
+  .feedback.missing{border-left-color:#9ca3af;color:#3f3f46;}
+  .feedback .icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
 
   .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
   button.action{
@@ -149,6 +150,12 @@ function renderQuiz(){
 
     const fb=document.createElement("div");
     fb.className="feedback";
+    const icon=document.createElement("span");
+    icon.className="icon";
+    fb.appendChild(icon);
+    const text=document.createElement("span");
+    fb.appendChild(text);
+
     card.appendChild(opts);
     card.appendChild(fb);
     quiz.appendChild(card);
@@ -164,11 +171,14 @@ function checkAnswers(){
     const card=cards[i];
     const opts=card.querySelectorAll(".option");
     const fb=card.querySelector(".feedback");
+    const icon=fb.querySelector(".icon");
+    const text=fb.querySelector("span:last-child");
 
     if(q.selected===undefined){
-      fb.style.display="block";
+      fb.style.display="flex";
       fb.className="feedback missing";
-      fb.textContent="Du har inte valt något svar.";
+      icon.textContent="ℹ️";
+      text.textContent="Du har inte valt något svar.";
       return;
     }
 
@@ -179,16 +189,18 @@ function checkAnswers(){
         if(isCorrect){
           b.classList.add("correct");
           fb.className="feedback correct";
+          icon.textContent="📘";
           correct++;
         } else {
           b.classList.add("wrong");
           fb.className="feedback wrong";
+          icon.textContent="❌";
         }
       }
     });
 
-    fb.style.display="block";
-    fb.textContent=q.options[q.selected].feedback;
+    fb.style.display="flex";
+    text.textContent=q.options[q.selected].feedback;
   });
 
   result.style.display="block";
@@ -201,8 +213,6 @@ function checkAnswers(){
 
 document.getElementById("checkBtn").addEventListener("click",checkAnswers);
 document.getElementById("resetBtn").addEventListener("click",renderQuiz);
-
-// init
 renderQuiz();
 </script>
 </body>
