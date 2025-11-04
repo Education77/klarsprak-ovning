@@ -168,53 +168,8 @@ const ALL_VERB=[
 {text:"Ta en kontakt",options:[{text:"Kontakta",correct:true,feedback:"Kort och tydligt."},{text:"Uppta kontakt",correct:false,feedback:"Onaturligt."},{text:"Göra en kontakt",correct:false,feedback:"Felaktigt."}]}
 ];
 
+/* --- Quizbyggare --- */
 function buildQuiz(containerId,dataArray,resId,state){
   const wrap=document.getElementById(containerId);wrap.innerHTML='';
-  state.items=randomPick(dataArray,3); // slumpa 3 frågor
-  state.score=0;
-  state.items.forEach((q,i)=>{
-    const card=document.createElement('div');card.className='card question';
-    card.innerHTML=`<h3>${i+1}) ${q.text}</h3>`;
-    const opts=document.createElement('div');opts.className='options';
-    q.options.forEach((o,j)=>{
-      const b=document.createElement('button');b.className='option';b.textContent=o.text;
-      b.addEventListener('click',()=>{opts.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');q.selected=j;});
-      opts.appendChild(b);
-    });
-    const fb=document.createElement('div');fb.className='feedback';fb.innerHTML='<span class="icon"></span><span></span>';
-    card.appendChild(opts);card.appendChild(fb);wrap.appendChild(card);
-  });
-  document.getElementById(resId).style.display='none';showFinal();
-}
-
-function checkQuizGeneric(containerId,resId,state){
-  const cards=document.querySelectorAll(`#${containerId} .question`);
-  let total=state.items.length,correct=0;
-  state.items.forEach((q,i)=>{
-    const card=cards[i],opts=card.querySelectorAll('.option'),fb=card.querySelector('.feedback'),icon=fb.querySelector('.icon'),text=fb.querySelector('span:last-child');
-    if(q.selected===undefined){fb.style.display='flex';fb.className='feedback missing';icon.innerHTML='';text.textContent='Du har inte valt något svar.';return;}
-    opts.forEach((b,idx)=>{b.disabled=true;const ok=q.options[idx].correct;
-      if(idx===q.selected){if(ok){b.classList.add('correct');fb.className='feedback correct';icon.innerHTML=ICONS.check;correct++;}else{b.classList.add('wrong');fb.className='feedback wrong';icon.innerHTML=ICONS.cross;}}
-    });
-    fb.style.display='flex';text.textContent=q.options[q.selected].feedback;
-  });
-  const res=document.getElementById(resId);
-  res.style.display='block';
-  res.innerHTML=(correct===total)?`<span class="score">Toppen! ${correct}/${total} rätt.</span>`:`<span class="score">${correct}/${total} rätt.</span>`;
-  state.score=(correct===total)?1:0;showFinal();
-}
-
-/* --- Slutbelöning --- */
-function showFinal(){
-  const final=document.getElementById('final');
-  final.style.display=(dndScore===1&&aktivState.score===1&&verbState.score===1)?'block':'none';
-}
-
-/* --- State & init --- */
-const aktivState={items:[],score:0};
-const verbState={items:[],score:0};
-
-document.getElementById('checkDnd').addEventListener('click',checkDnd);
-document.getElementById('resetDnd').addEventListener('click',resetDnd);
-document.getElementById('checkQuizAktiv').addEventListener('click',()=>checkQuizGeneric('quiz-aktiv','resQuizAktiv',aktivState));
-document.getElementById('resetQuizAktiv').addEventListener('
+  state.items=randomPick(dataArray,3);state.score=0;
+  state.items.forEa
