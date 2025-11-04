@@ -22,7 +22,7 @@
   .tip{background:var(--tipbg);border-left:4px solid var(--accent);padding:12px 14px;border-radius:8px;margin-top:12px}
   .score{font-weight:600}
 
-  /* Del 1 */
+  /* Del 1 – Drag & drop */
   .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
   @media (max-width:900px){.grid{grid-template-columns:1fr}}
   .bank .items{display:flex;flex-wrap:wrap;gap:10px}
@@ -34,23 +34,23 @@
   .chip.correct{border-color:#7fbf7f}
   .chip.wrong{border-color:var(--bad)}
 
-  /* Del 2 */
+  /* Del 2 – Quiz */
   .question h3{margin:0 0 6px;font-size:1rem}
   .options{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-  .option{ text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;transition:background .15s,border-color .15s }
+  .option{text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;transition:background .15s,border-color .15s}
   .option:hover{background:#f3f7f3}
   .option.selected{border-color:var(--accent);background:#f0f7f0}
   .option.correct{border-color:#7fbf7f;background:#f0f7f0}
   .option.wrong{border-color:var(--bad);background:#fbf3f3}
 
-  /* Feedback */
+  /* Feedback – vit bakgrund, färgad vänsterkant och ikon (SVG) */
   .feedback{margin-top:8px;font-size:.95rem;display:flex;align-items:flex-start;gap:6px;padding-left:8px;line-height:1.4;border-left:4px solid transparent;border-radius:4px;background:#fff;display:none}
   .feedback.correct{border-left-color:#7fbf7f;color:#1f331f;font-weight:500}
   .feedback.wrong{border-left-color:var(--bad);color:#4b1f1f;font-weight:500}
   .feedback.missing{border-left-color:#9ca3af;color:#3f3f46}
   .feedback .icon{width:18px;height:18px;flex-shrink:0;margin-top:2px;display:inline-block}
 
-  /* Del 3 */
+  /* Del 3 – Reflektion */
   textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;resize:vertical;background:#fff}
 
   /* Slutbelöning */
@@ -62,88 +62,195 @@
 <h1>Övning: Så låter Lerums kommun</h1>
 <p class="lead">Träna på att välja rätt ton, känna igen ton i olika situationer – och reflektera över hur språket påverkar upplevelsen.</p>
 
+<!-- ===== Del 1: Matcha målgrupp (Drag & Drop) ===== -->
 <section class="section">
   <h2>Del 1 – Matcha texten med rätt målgrupp</h2>
   <p class="muted">Dra varje text till den målgrupp där tonen passar bäst.</p>
-  <div class="card bank"><div class="label"><strong>Texter att placera</strong></div><div id="bank" class="items"></div></div>
-  <div class="grid">
-    <div class="card"><div class="label"><strong>Gymnasieelever</strong></div><div id="drop-elever" class="drop"></div></div>
-    <div class="card"><div class="label"><strong>Nyinflyttade</strong></div><div id="drop-nyinflyttade" class="drop"></div></div>
-    <div class="card"><div class="label"><strong>Företagare</strong></div><div id="drop-foretagare" class="drop"></div></div>
+
+  <div class="card bank">
+    <div class="label"><strong>Texter att placera</strong></div>
+    <div id="bank" class="items" role="list"></div>
   </div>
-  <div class="bar"><button id="checkDnd">Kontrollera del 1</button><button id="resetDnd">Rensa del 1</button></div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label"><strong>Gymnasieelever</strong></div>
+      <div id="drop-elever" class="drop" aria-label="Gymnasieelever"></div>
+      <p class="muted" style="margin-top:8px">Ung, uppmuntrande, direkt – korta meningar och “action”.</p>
+    </div>
+    <div class="card">
+      <div class="label"><strong>Nyinflyttade</strong></div>
+      <div id="drop-nyinflyttade" class="drop" aria-label="Nyinflyttade"></div>
+      <p class="muted" style="margin-top:8px">Vänlig, informativ, inkluderande – bygger förtroende.</p>
+    </div>
+    <div class="card">
+      <div class="label"><strong>Företagare</strong></div>
+      <div id="drop-foretagare" class="drop" aria-label="Företagare"></div>
+      <p class="muted" style="margin-top:8px">Saklig men tillmötesgående – fokus på effektivitet och tydlighet.</p>
+    </div>
+  </div>
+
+  <div class="bar">
+    <button id="checkDnd">Kontrollera del 1</button>
+    <button id="resetDnd">Rensa del 1</button>
+  </div>
   <div id="resDnd" class="tip" style="display:none"></div>
 </section>
 
+<!-- ===== Del 2: Känn igen tonen (MCQ) ===== -->
 <section class="section">
   <h2>Del 2 – Känn igen tonen i olika situationer</h2>
   <p class="muted">Välj den ton som stämmer bäst med texten. Kontrollera när du är klar.</p>
+
   <div id="quiz"></div>
-  <div class="bar"><button id="checkQuiz">Kontrollera del 2</button><button id="resetQuiz">Rensa del 2</button></div>
+
+  <div class="bar">
+    <button id="checkQuiz">Kontrollera del 2</button>
+    <button id="resetQuiz">Rensa del 2</button>
+  </div>
   <div id="resQuiz" class="tip" style="display:none"></div>
 </section>
 
+<!-- ===== Del 3: Reflektion ===== -->
 <section class="section">
   <h2>Del 3 – Reflektera</h2>
-  <div class="card"><p><strong>1)</strong> När tycker du att ton gör störst skillnad i ditt arbete?</p><textarea placeholder="Skriv dina tankar här … (sparas inte)"></textarea></div>
-  <div class="card"><p><strong>2)</strong> Vilken ton vill du att Lerums kommun ska förmedla i mötet med invånare – och hur kan du bidra till det i dina texter?</p><textarea placeholder="Skriv dina tankar här … (sparas inte)"></textarea></div>
+  <div class="card">
+    <p><strong>1)</strong> När tycker du att ton gör störst skillnad i ditt arbete?</p>
+    <textarea placeholder="Skriv dina tankar här … (sparas inte)"></textarea>
+  </div>
+  <div class="card">
+    <p><strong>2)</strong> Vilken ton vill du att Lerums kommun ska förmedla i mötet med invånare – och hur kan du bidra till det i dina texter?</p>
+    <textarea placeholder="Skriv dina tankar här … (sparas inte)"></textarea>
+  </div>
 </section>
 
+<!-- Slutbelöning -->
 <div id="final">
   💚 <strong>Du nailade tonen – snyggt!</strong><br>
   Dina svar visar att du kan anpassa språket efter både mottagare och situation.
 </div>
 
 <script>
+/* ---------- Ikoner (inline-SVG) ---------- */
 const ICONS = {
-  check:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><polyline points="20 6 9 17 4 12" fill="none" stroke="#7ba87f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  cross:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18" stroke="#cc7b7b" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="#cc7b7b" stroke-width="3" stroke-linecap="round"/></svg>'
+  check:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><polyline points="20 6 9 17 4 12" fill="none" stroke="#7ba87f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  cross:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" stroke="#cc7b7b" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="#cc7b7b" stroke-width="3" stroke-linecap="round"/></svg>'
 };
 
-/* ---- Del 1: Drag & Drop med slump ---- */
+/* ======================================================
+   Del 1: Drag & Drop med SLUMP
+   ====================================================== */
 const ALL_DND_ITEMS = [
+  // Elever
   { text:"Anmäl dig till skolans sommaraktiviteter via vår e-tjänst!", target:"elever" },
   { text:"Vill du sommarjobba i kommunen? Skicka in din ansökan senast 1 april!", target:"elever" },
   { text:"Behöver du intyg för praktik eller sommarjobb? Kontakta din studie- och yrkesvägledare.", target:"elever" },
+  { text:"Kom och påverka! Dela dina idéer i vår enkät.", target:"elever" },
 
+  // Nyinflyttade
   { text:"Välkommen till Lerum! Här hittar du information om sophämtning, skolor och fritid.", target:"nyinflyttade" },
   { text:"Upptäck vad Lerum har att erbjuda – från natur till kultur.", target:"nyinflyttade" },
   { text:"Så sorterar du avfallet rätt i din nya bostad – här finns tips och schema.", target:"nyinflyttade" },
+  { text:"Här får du en enkel överblick över vår service när du är ny i kommunen.", target:"nyinflyttade" },
 
+  // Företagare
   { text:"Du kan lämna din bygglovsansökan digitalt – vi hanterar den snabbt och tydligt.", target:"foretagare" },
   { text:"Har ditt företag idéer som kan utveckla kommunen? Hör gärna av dig!", target:"foretagare" },
-  { text:"Tack för att du bidrar till en hållbar kommun! Du som företagare gör skillnad.", target:"foretagare" }
+  { text:"Tack för att du bidrar till en hållbar kommun! Du som företagare gör skillnad.", target:"foretagare" },
+  { text:"Behöver du stöd i processen? Hör av dig – vi hjälper dig vidare.", target:"foretagare" }
 ];
 
-/* Välj slumpmässigt 4–6 av dessa varje gång */
-function randomItems(arr, n=4){
-  return [...arr].sort(()=>0.5 - Math.random()).slice(0, n);
-}
+function randomItems(arr, n=6){ return [...arr].sort(()=>0.5-Math.random()).slice(0,n); }
 
+const bank = document.getElementById('bank');
+const zones = {
+  elever: document.getElementById('drop-elever'),
+  nyinflyttade: document.getElementById('drop-nyinflyttade'),
+  foretagare: document.getElementById('drop-foretagare')
+};
+
+let dragEl = null;
+let dndScore = 0;
 let DND_ITEMS = [];
 
+function makeChip(item, idx){
+  const d = document.createElement('div');
+  d.className = 'chip';
+  d.draggable = true;
+  d.textContent = item.text;
+  d.dataset.target = item.target;
+  d.dataset.idx = idx;
+  d.addEventListener('dragstart', e=>{
+    dragEl = d;
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  d.addEventListener('dragend', ()=> dragEl = null);
+  return d;
+}
+
 function resetDnd(){
-  document.getElementById('resDnd').style.display='none';
+  document.getElementById('resDnd').style.display = 'none';
   bank.innerHTML = '';
   Object.values(zones).forEach(z=>z.innerHTML='');
-  DND_ITEMS = randomItems(ALL_DND_ITEMS, 6);  // antal texter per gång
+  DND_ITEMS = randomItems(ALL_DND_ITEMS, 6); // ändra antalet vid behov
   DND_ITEMS.forEach((it,i)=> bank.appendChild(makeChip(it,i)));
-  dndScore=0;
+  dndScore = 0;
+  checkFinal(); // döljer ev. final om quiz var klart
 }
-/* ---- Del 2: Tonquiz med slump ---- */
+
+['elever','nyinflyttade','foretagare'].forEach(id=>{
+  const z = zones[id];
+  ['dragover','dragenter'].forEach(ev=>{
+    z.addEventListener(ev, e=>{ e.preventDefault(); z.classList.add('hover'); });
+  });
+  z.addEventListener('dragleave', ()=> z.classList.remove('hover'));
+  z.addEventListener('drop', e=>{
+    e.preventDefault(); z.classList.remove('hover');
+    if(dragEl) z.appendChild(dragEl);
+  });
+});
+
+function checkDnd(){
+  const res = document.getElementById('resDnd');
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('correct','wrong'));
+  let total = DND_ITEMS.length, correct = 0;
+
+  Object.entries(zones).forEach(([zoneId, zone])=>{
+    zone.querySelectorAll('.chip').forEach(chip=>{
+      if(chip.dataset.target === zoneId){
+        chip.classList.add('correct');
+        correct++;
+      } else {
+        chip.classList.add('wrong');
+      }
+    });
+  });
+
+  res.style.display = 'block';
+  res.innerHTML = (correct===total)
+    ? `<span class="score">Snyggt! ${correct}/${total} rätt.</span> Alla texter ligger hos rätt målgrupp.`
+    : `<span class="score">${correct}/${total} rätt.</span> Kika på de röda markeringarna och justera.`;
+
+  dndScore = (correct===total) ? 1 : 0;
+  checkFinal();
+}
+
+/* ======================================================
+   Del 2: Quiz med SLUMP
+   ====================================================== */
 const ALL_QUIZ = [
   {
     text:"Stäng av vattnet före renoveringen – så undviker du skador.",
     options:[
-      {text:"Direkt och viktig", correct:true, feedback:"Tydligt och handlingsinriktat."},
-      {text:"Vänlig och informativ", correct:false, feedback:"Här behövs mer tydlighet."},
-      {text:"Ung och uppmuntrande", correct:false, feedback:"Inte rätt ton här."}
+      {text:"Direkt och viktig", correct:true, feedback:"Tydligt och handlingsinriktat – säkerhet i fokus."},
+      {text:"Vänlig och informativ", correct:false, feedback:"Här behövs mer tyngd och tydlighet."},
+      {text:"Ung och uppmuntrande", correct:false, feedback:"Inte rätt ton för säkerhetsinformation."}
     ]
   },
   {
     text:"Kom och träffa oss på Lerumsdagen – dela dina idéer om framtidens Lerum!",
     options:[
-      {text:"Inspirerande och engagerande", correct:true, feedback:"Bjuder in till dialog och engagemang."},
+      {text:"Inspirerande och engagerande", correct:true, feedback:"Bjuder in till dialog och delaktighet."},
       {text:"Saklig och formell", correct:false, feedback:"Lite för stel för evenemang."},
       {text:"Direkt och viktig", correct:false, feedback:"Inte en akut fråga."}
     ]
@@ -159,8 +266,8 @@ const ALL_QUIZ = [
   {
     text:"Nu kan du enkelt lämna synpunkter via vår nya e-tjänst!",
     options:[
-      {text:"Vänlig och uppmuntrande", correct:true, feedback:"Tonen är positiv och lättillgänglig."},
-      {text:"Formell och saklig", correct:false, feedback:"För torrt för att väcka intresse."},
+      {text:"Vänlig och uppmuntrande", correct:true, feedback:"Positiv ton som sänker tröskeln."},
+      {text:"Formell och saklig", correct:false, feedback:"Torrt för att väcka intresse."},
       {text:"Direkt och viktig", correct:false, feedback:"Inte en varning – mer service."}
     ]
   },
@@ -168,7 +275,7 @@ const ALL_QUIZ = [
     text:"Vi kommer att stänga av vattnet i området på torsdag kl. 8–12 för underhåll.",
     options:[
       {text:"Direkt och viktig", correct:true, feedback:"Rakt och tydligt – viktig driftinformation."},
-      {text:"Vänlig och informativ", correct:false, feedback:"Lite för mjukt."},
+      {text:"Vänlig och informativ", correct:false, feedback:"Lite för mjukt här."},
       {text:"Uppmuntrande och engagerande", correct:false, feedback:"Inte rätt ton."}
     ]
   },
@@ -190,51 +297,116 @@ const ALL_QUIZ = [
   }
 ];
 
-/* Slumpa 4–5 frågor varje gång */
-function randomQuiz(arr, n=4){
-  return [...arr].sort(()=>0.5 - Math.random()).slice(0, n);
-}
+function randomQuiz(arr, n=5){ return [...arr].sort(()=>0.5-Math.random()).slice(0,n); }
 
+const quizEl = document.getElementById('quiz');
 let QUIZ = [];
+let quizScore = 0;
 
 function renderQuiz(){
-  QUIZ = randomQuiz(ALL_QUIZ, 5); // antal frågor per gång
+  QUIZ = randomQuiz(ALL_QUIZ, 5); // ändra antalet vid behov
   quizEl.innerHTML = '';
   QUIZ.forEach((q,i)=>{
-    const card=document.createElement('div');
-    card.className='card question';
-    card.innerHTML=`<h3>${i+1}) ${q.text}</h3>`;
-    const opts=document.createElement('div');
-    opts.className='options';
+    const card = document.createElement('div');
+    card.className = 'card question';
+    const h3 = document.createElement('h3');
+    h3.textContent = `${i+1}) ${q.text}`;
+    card.appendChild(h3);
+
+    const opts = document.createElement('div');
+    opts.className = 'options';
     q.options.forEach((o,j)=>{
-      const b=document.createElement('button');
-      b.className='option'; b.textContent=o.text;
-      b.addEventListener('click',()=>{
+      const b = document.createElement('button');
+      b.className = 'option';
+      b.textContent = o.text;
+      b.addEventListener('click', ()=>{
         opts.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));
         b.classList.add('selected');
-        q.selected=j;
+        q.selected = j;
       });
       opts.appendChild(b);
     });
-    const fb=document.createElement('div');
-    fb.className='feedback';
-    fb.innerHTML='<span class="icon"></span><span></span>';
+
+    const fb = document.createElement('div');
+    fb.className = 'feedback';
+    fb.innerHTML = '<span class="icon" aria-hidden="true"></span><span></span>';
     card.appendChild(opts);
     card.appendChild(fb);
     quizEl.appendChild(card);
   });
-  document.getElementById('resQuiz').style.display='none';
-  quizScore=0;
+  document.getElementById('resQuiz').style.display = 'none';
+  quizScore = 0;
+  checkFinal(); // döljer ev. final om dnd var klart
 }
-/* ---- Slutbelöning ---- */
-function checkFinal(){const final=document.getElementById('final');final.style.display=(dndScore===1&&quizScore===1)?'block':'none';}
 
-/* ---- Init ---- */
-document.getElementById('checkDnd').addEventListener('click',checkDnd);
-document.getElementById('resetDnd').addEventListener('click',resetDnd);
-document.getElementById('checkQuiz').addEventListener('click',checkQuiz);
-document.getElementById('resetQuiz').addEventListener('click',renderQuiz);
-resetDnd();renderQuiz();
+function checkQuiz(){
+  const cards = document.querySelectorAll('.question');
+  let total = QUIZ.length, correct = 0;
+
+  QUIZ.forEach((q,i)=>{
+    const card = cards[i];
+    const opts = card.querySelectorAll('.option');
+    const fb = card.querySelector('.feedback');
+    const icon = fb.querySelector('.icon');
+    const text = fb.querySelector('span:last-child');
+
+    if(q.selected===undefined){
+      fb.style.display='flex';
+      fb.className='feedback missing';
+      icon.innerHTML = '';
+      text.textContent = 'Du har inte valt något svar.';
+      return;
+    }
+
+    opts.forEach((b,idx)=>{
+      b.disabled = true;
+      const ok = q.options[idx].correct;
+      if(idx===q.selected){
+        if(ok){
+          b.classList.add('correct');
+          fb.className='feedback correct';
+          icon.innerHTML = ICONS.check;
+          correct++;
+        }else{
+          b.classList.add('wrong');
+          fb.className='feedback wrong';
+          icon.innerHTML = ICONS.cross;
+        }
+      }
+    });
+
+    fb.style.display='flex';
+    text.textContent = q.options[q.selected].feedback;
+  });
+
+  const res = document.getElementById('resQuiz');
+  res.style.display = 'block';
+  res.innerHTML = (correct===total)
+    ? `<span class="score">Toppen! ${correct}/${total} rätt.</span> Du kände igen tonerna klockrent.`
+    : `<span class="score">${correct}/${total} rätt.</span> Läs feedbacken ovan och justera dina val.`;
+
+  quizScore = (correct===total) ? 1 : 0;
+  checkFinal();
+}
+
+/* ======================================================
+   Slutbelöning – visas bara vid full pott i Del 1 & 2
+   ====================================================== */
+function checkFinal(){
+  const final = document.getElementById('final');
+  final.style.display = (dndScore===1 && quizScore===1) ? 'block' : 'none';
+}
+
+/* ======================================================
+   Init & knappar
+   ====================================================== */
+document.getElementById('checkDnd').addEventListener('click', checkDnd);
+document.getElementById('resetDnd').addEventListener('click', resetDnd);
+document.getElementById('checkQuiz').addEventListener('click', checkQuiz);
+document.getElementById('resetQuiz').addEventListener('click', renderQuiz);
+
+resetDnd();
+renderQuiz();
 </script>
 </body>
 </html>
