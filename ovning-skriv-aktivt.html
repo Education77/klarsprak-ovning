@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Övning: Skriv aktivt</title>
+<style>
+  :root{
+    --bg:#f9faf8; --card:#fff; --line:#e2e6e2; --ink:#1f2a1f;
+    --muted:#556; --accent:#7ba87f; --tipbg:#eef3ee; --bad:#cc7b7b;
+  }
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:20px;}
+  h1{font-size:1.6rem;margin:0 0 .4em}
+  h2{font-size:1.25rem;margin:0 0 .4em}
+  p.lead{color:var(--muted);margin:0 0 1.2em}
+  .section{margin-top:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+  .muted{color:var(--muted)}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font:inherit;cursor:pointer}
+  button:hover{box-shadow:0 1px 6px rgba(0,0,0,.08)}
+  .tip{background:var(--tipbg);border-left:4px solid var(--accent);padding:12px 14px;border-radius:8px;margin-top:12px}
+  .score{font-weight:600}
+
+  /* Del 1 – Drag & drop */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .bank .items{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 12px;cursor:grab;user-select:none;font-size:14px;line-height:1.2;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+  .drop{min-height:160px;border:2px dashed var(--line);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:10px;background:#fff}
+  .drop.hover{background:#fafdf9;border-color:var(--accent)}
+  .label{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .label:before{content:"";display:inline-block;width:8px;height:20px;background:var(--accent);border-radius:4px}
+  .chip.correct{border-color:#7fbf7f}
+  .chip.wrong{border-color:var(--bad)}
+
+  /* Del 2–3 – klick & feedback */
+  .question h3{margin:0 0 6px;font-size:1rem}
+  .options{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .option{text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;transition:background .15s,border-color .15s}
+  .option:hover{background:#f3f7f3}
+  .option.selected{border-color:var(--accent);background:#f0f7f0}
+  .option.correct{border-color:#7fbf7f;background:#f0f7f0}
+  .option.wrong{border-color:var(--bad);background:#fbf3f3}
+
+  /* Feedback – vit bakgrund, färgad vänsterkant och ikon (SVG) */
+  .feedback{margin-top:8px;font-size:.95rem;display:flex;align-items:flex-start;gap:6px;padding-left:8px;line-height:1.4;border-left:4px solid transparent;border-radius:4px;background:#fff;display:none}
+  .feedback.correct{border-left-color:#7fbf7f;color:#1f331f;font-weight:500}
+  .feedback.wrong{border-left-color:var(--bad);color:#4b1f1f;font-weight:500}
+  .feedback.missing{border-left-color:#9ca3af;color:#3f3f46}
+  .feedback .icon{width:18px;height:18px;flex-shrink:0;margin-top:2px;display:inline-block}
+
+  /* Slutbelöning */
+  #final{display:none;margin-top:20px;background:#f0f7f0;border-left:4px solid #7ba87f;padding:14px;border-radius:10px;font-size:1rem}
+</style>
+</head>
+<body>
+
+<h1>Övning: Skriv aktivt</h1>
+<p class="lead">Träna på att känna igen passiv form, skriva om till aktiv – och välja enklare verb som gör texten tydlig och levande.</p>
+
+<!-- ===== Del 1: Passiv eller aktiv? (Drag & Drop) ===== -->
+<section class="section">
+  <h2>Del 1 – Känn igen passiv och aktiv</h2>
+  <p class="muted">Dra varje mening till rätt kolumn.</p>
+
+  <div class="card bank">
+    <div class="label"><strong>Meningar att placera</strong></div>
+    <div id="bank" class="items" role="list"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label"><strong>Passiv form</strong></div>
+      <div id="drop-passiv" class="drop" aria-label="Passiv form"></div>
+      <p class="muted" style="margin-top:8px">Ofta -s-form: bokas, skrivs, fattas.</p>
+    </div>
+    <div class="card">
+      <div class="label"><strong>Aktiv form</strong></div>
+      <div id="drop-aktiv" class="drop" aria-label="Aktiv form"></div>
+      <p class="muted" style="margin-top:8px">Någon gör något: ”Boka rummet”, ”Du ansöker”.</p>
+    </div>
+  </div>
+
+  <div class="bar">
+    <button id="checkDnd">Kontrollera del 1</button>
+    <button id="resetDnd">Rensa del 1</button>
+  </div>
+  <div id="resDnd" class="tip" style="display:none"></div>
+</section>
+
+<!-- ===== Del 2: Skriv om till aktiv (MCQ) ===== -->
+<section class="section">
+  <h2>Del 2 – Skriv om till aktiv</h2>
+  <p class="muted">Välj den bästa aktiva omskrivningen. Kontrollera när du är klar.</p>
+
+  <div id="quiz-aktiv"></div>
+
+  <div class="bar">
+    <button id="checkQuizAktiv">Kontrollera del 2</button>
+    <button id="resetQuizAktiv">Rensa del 2</button>
+  </div>
+  <div id="resQuizAktiv" class="tip" style="display:none"></div>
+</section>
+
+<!-- ===== Del 3: Välj enklare verb (MCQ) ===== -->
+<section class="section">
+  <h2>Del 3 – Välj enklare verb</h2>
+  <p class="muted">Byt ut byråkratiska uttryck och substantiverade verb mot raka verb.</p>
+
+  <div id="quiz-verb"></div>
+
+  <div class="bar">
+    <button id="checkQuizVerb">Kontrollera del 3</button>
+    <button id="resetQuizVerb">Rensa del 3</button>
+  </div>
+  <div id="resQuizVerb" class="tip" style="display:none"></div>
+</section>
+
+<!-- Slutbelöning -->
+<div id="final">
+  💚 <strong>Snyggt jobbat!</strong><br>
+  Du skrev aktivt, undvek passiv form och valde tydliga verb.
+</div>
+
+<script>
+/* ---------- Ikoner (inline-SVG) ---------- */
+const ICONS = {
+  check:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><polyline points="20 6 9 17 4 12" fill="none" stroke="#7ba87f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  cross:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" stroke="#cc7b7b" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="#cc7b7b" stroke-width="3" stroke-linecap="round"/></svg>'
+};
+
+/* ======================================================
+   Del 1: Drag & Drop – Passiv vs aktiv
+   ====================================================== */
+const ALL_DND = [
+  { text:"Mötesrummet bokas i Outlook.", target:"passiv" },
+  { text:"Boka mötesrummet i Outlook.", target:"aktiv" },
+  { text:"Ansökan görs via e-tjänsten.", target:"passiv" },
+  { text:"Du ansöker via e-tjänsten.", target:"aktiv" },
+  { text:"Blanketten fylls i digitalt.", target:"passiv" },
+  { text:"Fyll i blanketten digitalt.", target:"aktiv" },
+  { text:"Beslutet fattas av nämnden.", target:"passiv" },
+  { text:"Nämnden fattar beslutet.", target:"aktiv" },
+  { text:"Avgiften betalas senast 31 maj.", target:"passiv" },
+  { text:"Betala avgiften senast 31 maj.", target:"aktiv" }
+];
+
+function randomPick(arr, n){ return [...arr].sort(()=>0.5-Math.random()).slice(0,n); }
+
+const bank = document.getElementById('bank');
+const zones = {
+  passiv: document.getElementById('drop-passiv'),
+  aktiv: document.getElementById('drop-aktiv')
+};
+let dragEl=null, dndScore=0, DND_ITEMS=[];
+
+function makeChip(item, idx){
+  const d=document.createElement('div');
+  d.className='chip'; d.draggable=true; d.textContent=item.text;
+  d.dataset.target=item.target; d.dataset.idx=idx;
+  d.addEventListener('dragstart', e=>{dragEl=d; e.dataTransfer.effectAllowed='move';});
+  d.addEventListener('dragend', ()=>dragEl=null);
+  return d;
+}
+function resetDnd(){
+  document.getElementById('resDnd').style.display='none';
+  bank.innerHTML=''; Object.values(zones).forEach(z=>z.innerHTML='');
+  DND_ITEMS = randomPick(ALL_DND, 8);
+  DND_ITEMS.forEach((it,i)=> bank.appendChild(makeChip(it,i)));
+  dndScore=0; showFinal();
+}
+['passiv','aktiv'].forEach(id=>{
+  const z=zones[id];
+  ['dragover','dragenter'].forEach(ev=>{
+    z.addEventListener(ev,e=>{e.preventDefault(); z.classList.add('hover');});
+  });
+  z.addEventListener('dragleave',()=>z.classList.remove('hover'));
+  z.addEventListener('drop',e=>{e.preventDefault(); z.classList.remove('hover'); if(dragEl) z.appendChild(dragEl);});
+});
+function checkDnd(){
+  const res=document.getElementById('resDnd');
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('correct','wrong'));
+  let total=DND_ITEMS.length, correct=0;
+  Object.entries(zones).forEach(([id,z])=>{
+    z.querySelectorAll('.chip').forEach(ch=>{
+      if(ch.dataset.target===id){ ch.classList.add('correct'); correct++; }
+      else { ch.classList.add('wrong'); }
+    });
+  });
+  res.style.display='block';
+  res.innerHTML = (correct===total)
+    ? `<span class="score">Snyggt! ${correct}/${total} rätt.</span> Du känner igen passiv och aktiv.`
+    : `<span class="score">${correct}/${total} rätt.</span> Kika på de röda markeringarna och justera.`;
+  dndScore = (correct===total)?1:0; showFinal();
+}
+
+/* ======================================================
+   Del 2: Skriv om till aktiv (MCQ)
+   ====================================================== */
+const ALL_AKTIV = [
+  {
+    text:"Mötesrummet bokas i Outlook.",
+    options:[
+      {text:"Boka mötesrummet i Outlook.", correct:true, feedback:"Aktiv form i imperativ – tydligt."},
+      {text:"Mötesrummet bör bokas i Outlook.", correct:false, feedback:"Fortfarande passiv/känns byråkratisk."},
+      {text:"Mötesrummet bokas av medarbetare i Outlook.", correct:false, feedback:"Passiv + otydlig agent."}
+    ]
+  },
+  {
+    text:"Ansökan görs via e-tjänsten.",
+    options:[
+      {text:"Du ansöker via e-tjänsten.", correct:true, feedback:"Aktiv form med du-tilltal."},
+      {text:"Ansökan ska göras via e-tjänsten.", correct:false, feedback:"Passiv och styrande modalverb."},
+      {text:"E-tjänsten nyttjas för ansökan.", correct:false, feedback:"Formellt och substantiverat."}
+    ]
+  },
+  {
+    text:"Blanketten fylls i digitalt.",
+    options:[
+      {text:"Fyll i blanketten digitalt.", correct:true, feedback:"Imperativ – rakt och tydligt."},
+      {text:"Blanketten behöver fyllas i digitalt.", correct:false, feedback:"Passivt uttryck kvar."},
+      {text:"Digital ifyllnad av blankett ska ske.", correct:false, feedback:"Byråkratiskt och substantiverat."}
+    ]
+  },
+  {
+    text:"Beslutet fattas av nämnden.",
+    options:[
+      {text:"Nämnden fattar beslutet.", correct:true, feedback:"Subjekt + aktivt verb."},
+      {text:"Beslutet kommer att fattas av nämnden.", correct:false, feedback:"Passiv/omständlig framtidsform."},
+      {text:"Ett beslut kommer att fattas.", correct:false, feedback:"Otydlig agent och passiv form."}
+    ]
+  }
+];
+function buildQuiz(containerId, dataArray, state){
+  const wrap=document.getElementById(containerId);
+  wrap.innerHTML='';
+  state.items = randomPick(dataArray, dataArray.length); // ta alla men slumpa ordning
+  state.items.forEach((q,i)=>{
+    const card=document.createElement('div'); card.className='card question';
+    const h3=document.createElement('h3'); h3.textContent=`${i+1}) ${q.text}`; card.appendChild(h3);
+    const opts=document.createElement('div'); opts.className='options';
+    q.options.forEach((o,j)=>{
+      const b=document.createElement('button'); b.className='option'; b.textContent=o.text;
+      b.addEventListener('click',()=>{ opts.querySelectorAll('.option').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); q.selected=j; });
+      opts.appendChild(b);
+    });
+    const fb=document.createElement('div'); fb.className='feedback'; fb.innerHTML='<span class="icon"></span><span></span>';
+    card.appendChild(opts); card.appendChild(fb); wrap.appendChild(card);
+  });
+  state.score=0; document.getElementById(state.resId).style.display='none'; showFinal();
+}
+function checkQuizGeneric(state){
+  const cards=document.querySelectorAll(`#${state.containerId} .question`);
+  let total=state.items.length, correct=0;
+  state.items.forEach((q,i)=>{
+    const card=cards[i], opts=card.querySelectorAll('.option'), fb=card.querySelector('.feedback'), icon=fb.querySelector('.icon'), text=fb.querySelector('span:last-child');
+    if(q.selected===undefined){ fb.style.display='flex'; fb.className='feedback missing'; icon.innerHTML=''; text.textContent='Du har inte valt något svar.'; return; }
+    opts.forEach((b,idx)=>{ b.disabled=true; const ok=q.options[idx].correct;
+      if(idx===q.selected){
+        if(ok){ b.classList.add('correct'); fb.className='feedback correct'; icon.innerHTML=ICONS.check; correct++; }
+        else { b.classList.add('wrong'); fb.className='feedback wrong'; icon.innerHTML=ICONS.cross; }
+      }
+    });
+    fb.style.display='flex'; text.textContent=q.options[q.selected].feedback;
+  });
+  const res=document.getElementById(state.resId);
+  res.style.display='block';
+  res.innerHTML = (correct===total)?`<span class="score">Toppen! ${correct}/${total} rätt.</span>`:`<span class="score">${correct}/${total} rätt.</span>`;
+  state.score = (correct===total)?1:0; showFinal();
+}
+
+/* ======================================================
+   Del 3: Enklare verb (MCQ) – byt nominalisering
+   ====================================================== */
+const ALL_VERB = [
+  {
+    text:"Genomföra en bokning",
+    options:[
+      {text:"Boka", correct:true, feedback:"Rakt verb ersätter nominalisering."},
+      {text:"Utföra bokning", correct:false, feedback:"Onödigt långt, substantiverat."},
+      {text:"Genomför bokningsärende", correct:false, feedback:"Byråkratiskt."}
+    ]
+  },
+  {
+    text:"Ge information",
+    options:[
+      {text:"Informera", correct:true, feedback:"Tydligt verb som kortar meningen."},
+      {text:"Tillhandahålla information", correct:false, feedback:"Formellt och långt."},
+      {text:"Göra ett informationsgivande", correct:false, feedback:"Krångligt."}
+    ]
+  },
+  {
+    text:"Göra en anmälan",
+    options:[
+      {text:"Anmäla", correct:true, feedback:"Direkt verbform."},
+      {text:"Åstadkomma anmälan", correct:false, feedback:"Onaturligt och långt."},
+      {text:"Upprätta en anmälan", correct:false, feedback:"Formellt – ibland korrekt juridiskt, men onödigt här."}
+    ]
+  },
+  {
+    text:"Ta en kontakt",
+    options:[
+      {text:"Kontakta", correct:true, feedback:"Kort och tydligt."},
+      {text:"Uppta kontakt", correct:false, feedback:"Onaturligt uttryck."},
+      {text:"Göra en kontakt", correct:false, feedback:"Felaktig fras."}
+    ]
+  }
+];
+
+/* ======================================================
+   State & init
+   ====================================================== */
+const stateAktiv = { containerId:'quiz-aktiv', resId:'resQuizAktiv', items:[], score:0 };
+const stateVerb  = { containerId:'quiz-verb',  resId:'resQuizVerb',  items:[], score:0 };
+
+function showFinal(){
+  const final=document.getElementById('final');
+  final.style.display = (dndScore===1 && stateAktiv.score===1 && stateVerb.score===1) ? 'block' : 'none';
+}
+
+/* Knappar */
+document.getElementById('checkDnd').addEventListener('click', checkDnd);
+document.getElementById('resetDnd').addEventListener('click', resetDnd);
+
+document.getElementById('checkQuizAktiv').addEventListener('click', ()=>checkQuizGeneric(stateAktiv));
+document.getElementById('resetQuizAktiv').addEventListener('click', ()=>buildQuiz('quiz-aktiv', ALL_AKTIV, stateAktiv));
+
+document.getElementById('checkQuizVerb').addEventListener('click', ()=>checkQuizGeneric(stateVerb));
+document.getElementById('resetQuizVerb').addEventListener('click', ()=>buildQuiz('quiz-verb', ALL_VERB, stateVerb));
+
+/* Start */
+resetDnd();
+buildQuiz('quiz-aktiv', ALL_AKTIV, stateAktiv);
+buildQuiz('quiz-verb',  ALL_VERB,  stateVerb);
+</script>
+</body>
+</html>
