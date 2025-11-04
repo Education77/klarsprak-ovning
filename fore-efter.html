@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Klarspråk – Före/Efter</title>
+  <style>
+    :root{
+      --bg: #f7faf8;             /* mjuk, ljus bakgrund */
+      --card: #ffffff;            /* kort-bakgrund */
+      --text: #1f2937;            /* mörk text */
+      --muted: #6b7280;          /* sekundär text */
+      --border: #e5e7eb;          /* grå avgränsare */
+      --green-500: #48a862;       /* vänlig grön */
+      --green-600: #3f9155;       /* rubriker, knappar */
+      --green-700: #2f6c40;       /* mörkare accent */
+      --accent-bg: #eef7f1;       /* ljusgrön bakgrund för callouts */
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans";}
+    .container{max-width:1100px; margin:48px auto; padding:0 20px;}
+    header h1{margin:0 0 6px; font-size:clamp(28px, 3.4vw, 40px); color:var(--green-700); letter-spacing:.2px}
+    header p{margin:0; color:var(--muted)}
+
+    .grid{display:grid; grid-template-columns:1fr; gap:22px; margin-top:28px}
+    @media(min-width:960px){.grid{grid-template-columns:1fr 1fr; gap:26px}}
+
+    .card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; box-shadow:0 1px 0 rgba(0,0,0,.02)}
+    .card h2{margin:4px 0 12px; font-size:clamp(20px,2.2vw,26px)}
+    .badge{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:600; font-size:13px; letter-spacing:.2px}
+    .badge-fore{background:#f7f7f8; color:#374151; border:1px solid var(--border)}
+    .badge-efter{background:var(--accent-bg); color:var(--green-700); border:1px solid #d9e9df}
+
+    .section{margin-top:14px}
+    .section h3{margin:0 0 8px; font-size:18px; color:var(--green-600)}
+    .divider{height:1px; background:var(--border); margin:14px 0}
+
+    /* Före: avsiktligt lite trängre och svagare kontrast */
+    .fore .text{font-size:15px; color:#4b5563}
+    .fore .img{height:180px; background:#f4f4f5; border:1px solid #e5e7eb; border-radius:8px}
+
+    /* Efter: mer luft, starkare rubriker, subtil skugga och jämna proportioner */
+    .efter{border-color:#dfe7e2}
+    .efter .text{font-size:16px}
+    .efter .img{height:200px; background:#f9fbfa; border:1px solid #dfe7e2; border-radius:12px; box-shadow:0 8px 18px rgba(25, 83, 53, .06)}
+
+    .callout{background:var(--accent-bg); border:1px solid #d9e9df; border-radius:12px; padding:14px 14px}
+    .callout .title{font-weight:700; color:var(--green-700)}
+    .callout p{margin:6px 0 0}
+
+    .pill{display:inline-block; background:var(--green-600); color:white; padding:6px 10px; border-radius:999px; font-weight:700; font-size:13px}
+    .list{padding-left:18px; margin:10px 0}
+    .list li{margin:6px 0}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; font-size:.9em; background:#f3f4f6; border:1px solid #e5e7eb; padding:1px 6px; border-radius:6px}
+
+    footer{margin-top:28px; color:var(--muted); font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Klarspråk – Före/Efter</h1>
+      <p>Små justeringar i luft, kontrast och mikrotexter gör stor skillnad.</p>
+    </header>
+
+    <div class="grid">
+      <!-- FÖRE-KORT -->
+      <section class="card fore" aria-label="Före">
+        <span class="badge badge-fore">Före</span>
+        <h2>Avsnitt: Skriv aktivt</h2>
+
+        <div class="section">
+          <div class="text">
+            <p>Här presenteras innehåll om aktiv och passiv form. Dags för övning finns som rubrik. Bilderna visas i dokumentet utan ram.</p>
+          </div>
+          <div class="divider"></div>
+          <div class="img" role="img" aria-label="Exempelbild, förebild utan ram"></div>
+        </div>
+
+        <div class="section">
+          <h3>Exempel</h3>
+          <ul class="list">
+            <li><strong>Passiv:</strong> Mötesrummet <em>bokas</em> i Outlook.</li>
+            <li><strong>Aktiv:</strong> Boka mötesrummet i Outlook.</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+        <div class="section">
+          <span class="pill" aria-hidden="true">Dags för övning</span>
+        </div>
+      </section>
+
+      <!-- EFTER-KORT -->
+      <section class="card efter" aria-label="Efter">
+        <span class="badge badge-efter">Efter</span>
+        <h2 style="color:var(--green-700); letter-spacing:.1px">Avsnitt: Skriv aktivt</h2>
+
+        <!-- Förklaring före innehåll: kort introduktion ökar läsbarhet -->
+        <div class="section">
+          <div class="text">
+            <p><strong>Syfte:</strong> Gör texten tydlig genom att skriva i <strong>aktiv form</strong> och tala om <strong>vem</strong> som gör vad. Passiv form kan kännas stel, opersonlig och byråkratisk.</p>
+          </div>
+        </div>
+
+        <!-- Förbättrad bildpresentation: jämna proportioner + skugga + tydligare separation -->
+        <div class="section">
+          <div class="img" role="img" aria-label="Exempelbild, efter med ram och skugga"></div>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+
+        <!-- Mikrotexter för guidning -->
+        <div class="section callout" role="note" aria-label="Tips">
+          <div class="title">Tips</div>
+          <p>Testa om meningen fungerar att läsa med ett tydligt <em>subjekt</em> först. Om inte – skriv om till aktiv form.</p>
+        </div>
+
+        <!-- Tydligare exempel med visuell struktur -->
+        <div class="section">
+          <h3>Exempel</h3>
+          <ul class="list">
+            <li><strong>❌ Undvik:</strong> Mötesrummet <em>bokas</em> i Outlook. <span class="muted"></span></li>
+            <li><strong>✅ Skriv så här:</strong> <strong>Du</strong> <em>bokar</em> mötesrummet i Outlook.</li>
+            <li><strong>❌ Undvik:</strong> Ansökan <em>görs</em> via e‑tjänsten.</li>
+            <li><strong>✅ Skriv så här:</strong> <strong>Du</strong> <em>ansöker</em> via e‑tjänsten.</li>
+          </ul>
+        </div>
+
+        <!-- Mer synlig och konsekvent övningsmarkör -->
+        <div class="section">
+          <div class="divider"></div>
+          <div class="callout" role="complementary" aria-label="Dags för övning">
+            <div class="title">Dags för övning</div>
+            <p>Förvandla två meningar från passiv till aktiv form. <em>Tips:</em> Skriv in <strong>vem</strong> som gör handlingen först.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Snabbguide: vilka förbättringar gjordes? -->
+    <section class="card" style="margin-top:22px" aria-label="Förbättringar">
+      <h2 style="margin-top:0">Vad skiljer Efter från Före?</h2>
+      <ul class="list">
+        <li><strong>Mer luft:</strong> större inner‑marginaler och tydligare avstånd mellan sektioner.</li>
+        <li><strong>Kontrast:</strong> något mörkare grön på rubriker ökar läsbarheten.</li>
+        <li><strong>Visuell separation:</strong> jämna bildproportioner, subtil skugga och konsekventa grå avgränsare.</li>
+        <li><strong>Mikrotexter:</strong> kort introduktion, <em>Tips</em> och tydlig <em>Dags för övning</em>-ruta guidar läsaren.</li>
+        <li><strong>Nyckelord i fetstil:</strong> t.ex. <em>aktiv form</em>, <em>vem</em>, <em>ansöker</em>.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>Proffstips: Behöver du större/rundare knappar eller mörkare rubriker? Justera variablerna högst upp i CSS:en (<code>--green-600</code>, <code>--green-700</code>, <code>--border</code>).</p>
+      <p>Snabbtest: Tryck <span class="kbd">Tab</span> genom sidan och kontrollera att fokus och läsordning känns naturliga.</p>
+    </footer>
+  </div>
+</body>
+</html>
